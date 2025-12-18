@@ -8,6 +8,9 @@ interface RoleContextType {
   setRole: (role: Role) => void;
   userName: string;
   setUserName: (name: string) => void;
+  isAuthenticated: boolean;
+  login: (name: string, role: Role) => void;
+  logout: () => void;
 }
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
@@ -15,9 +18,22 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 export const RoleProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<Role>('directeur');
   const [userName, setUserName] = useState('Jean Dupont');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const login = (name: string, newRole: Role) => {
+    setUserName(name);
+    setRole(newRole);
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUserName('');
+    setRole('etudiant');
+  };
 
   return (
-    <RoleContext.Provider value={{ role, setRole, userName, setUserName }}>
+    <RoleContext.Provider value={{ role, setRole, userName, setUserName, isAuthenticated, login, logout }}>
       {children}
     </RoleContext.Provider>
   );

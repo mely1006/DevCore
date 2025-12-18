@@ -61,7 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     <>
       <aside
         className={cn(
-          "bg-gradient-2 border-r border-gray-200 transition-all duration-200 ease-in flex flex-col h-screen",
+          "border-r border-gray-200 transition-all duration-200 ease-in flex flex-col h-screen",
           isOpen ? "w-64" : "w-20",
           "lg:relative absolute z-50 lg:translate-x-0",
           !isOpen && "-translate-x-full lg:translate-x-0"
@@ -69,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       >
         <div className="p-8 flex items-center justify-between">
           {isOpen && (
-            <h1 className="font-heading font-bold text-xl text-tertiary">
+            <h1 className="font-heading font-bold text-xl ">
               Université Casa
             </h1>
           )}
@@ -77,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             variant="ghost"
             size="icon"
             onClick={onToggle}
-            className="bg-transparent text-tertiary hover:bg-secondary hover:text-secondary-foreground"
+            className="bg-transparent text-foreground hover:bg-secondary hover:text-secondary-foreground"
             aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
             {isOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
@@ -94,22 +94,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-150 ease-in cursor-pointer",
+                  "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-150 ease-in cursor-pointer group",
                   isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-tertiary hover:bg-secondary hover:text-secondary-foreground",
+                    ? "bg-primary text-white" 
+                    : "text-foreground hover:bg-secondary hover:text-white",
                   !isOpen && "justify-center"
                 )}
                 aria-label={item.label}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" strokeWidth={1.5} />
-                {isOpen && <span className="font-normal">{item.label}</span>}
+                <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-white" : "text-foreground group-hover:text-white")} strokeWidth={1.5} />
+                {isOpen && <span className={cn("font-normal", isActive ? "text-white" : "text-foreground group-hover:text-white")}>{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        <Separator className="bg-gray-300 mx-4" />
+        <Separator className="bg-gray-300" />
 
         <div className="p-4 space-y-2">
           {utilityItems.map((item) => {
@@ -121,29 +121,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-150 ease-in cursor-pointer",
+                  "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-150 ease-in cursor-pointer group",
                   isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-tertiary hover:bg-secondary hover:text-secondary-foreground",
+                    ? "bg-primary text-white" 
+                    : "text-foreground hover:bg-secondary hover:text-white",
                   !isOpen && "justify-center"
                 )}
                 aria-label={item.label}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" strokeWidth={1.5} />
-                {isOpen && <span className="font-normal">{item.label}</span>}
+                <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-white" : "text-foreground group-hover:text-white")} strokeWidth={1.5} />
+                {isOpen && <span className={cn("font-normal", isActive ? "text-white" : "text-foreground group-hover:text-white")}>{item.label}</span>}
               </Link>
             );
           })}
           
           <button
             className={cn(
-              "w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-150 ease-in cursor-pointer text-tertiary hover:bg-secondary hover:text-secondary-foreground",
+              "w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-150 ease-in cursor-pointer text-foreground hover:bg-secondary hover:text-white group",
               !isOpen && "justify-center"
             )}
             aria-label="Déconnexion"
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" strokeWidth={1.5} />
-            {isOpen && <span className="font-normal">Déconnexion</span>}
+            <LogOut className={cn("w-5 h-5 flex-shrink-0", "group-hover:text-white")} strokeWidth={1.5} />
+            {isOpen && <span className="font-normal group-hover:text-white">Déconnexion</span>}
           </button>
         </div>
       </aside>

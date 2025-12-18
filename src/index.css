@@ -6,31 +6,35 @@
 
 @layer base {
   :root {
-    --color-background: 0 0% 100%;
-    --color-foreground: 210 10% 20%;
+    --color-background: 222 14% 8%;
+    --color-foreground: 0 0% 100%;
     --color-primary: 340 60% 22%;
     --color-primary-foreground: 0 0% 100%;
     --color-secondary: 340 55% 32%;
     --color-secondary-foreground: 0 0% 100%;
-    --color-tertiary: 20 15% 94%;
-    --color-tertiary-foreground: 340 20% 20%;
-    --color-neutral: 0 0% 100%;
-    --color-neutral-foreground: 210 10% 20%;
-    --color-border: 0 0% 90%;
-    --color-input: 0 0% 90%;
-    --color-ring: 340 60% 22%;
+    --color-tertiary: 20 15% 10%;
+    --color-tertiary-foreground: 0 0% 100%;
+    --color-neutral: 0 0% 10%;
+    --color-neutral-foreground: 0 0% 100%;
+    --color-border: 0 0% 30%;
+    --color-input: 0 0% 15%;
+    --color-ring: 340 60% 60%;
     --color-success: 140 40% 35%;
     --color-warning: 40 80% 40%;
-    --color-muted: 0 0% 95%;
-    --color-muted-foreground: 0 0% 40%;
+    --color-muted: 0 0% 12%;
+    --color-muted-foreground: 0 0% 70%;
     --color-accent: 340 55% 32%;
     --color-accent-foreground: 0 0% 100%;
     --color-destructive: 0 84% 60%;
     --color-destructive-foreground: 0 0% 100%;
-    --color-card: 0 0% 100%;
-    --color-card-foreground: 210 10% 20%;
-    --color-popover: 0 0% 100%;
-    --color-popover-foreground: 210 10% 20%;
+    --color-card: 222 14% 10%;
+    --color-card-foreground: 0 0% 100%;
+    --color-popover: 222 14% 10%;
+    --color-popover-foreground: 0 0% 100%;
+    --color-border: 222 14% 20%;
+    --color-input: 222 14% 12%;
+    --color-muted: 222 14% 12%;
+    --color-muted-foreground: 0 0% 70%;
     
     --font-sans: "Work Sans", sans-serif;
     --font-heading: "DM Sans", sans-serif;
@@ -47,6 +51,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    color: hsl(var(--color-foreground)) !important;
   }
 
   h1, h2, h3, h4, h5, h6 {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, GraduationCap, BookOpen } from 'lucide-react';
+import { Users, GraduationCap, BookOpen, MoreHorizontal } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const kpiData = [
@@ -29,10 +31,10 @@ const courseParticipation = [
 const COLORS = ['hsl(340, 60%, 22%)', 'hsl(340, 55%, 32%)', 'hsl(340, 50%, 42%)', 'hsl(340, 45%, 52%)', 'hsl(340, 40%, 62%)'];
 
 const recentActivities = [
-  { action: 'Nouvel étudiant inscrit', user: 'Marie Dubois', time: 'Il y a 5 minutes' },
-  { action: 'Espace pédagogique créé', user: 'Prof. Martin', time: 'Il y a 1 heure' },
-  { action: 'Promotion 2024 mise à jour', user: 'Admin', time: 'Il y a 2 heures' },
-  { action: 'Nouveau formateur ajouté', user: 'Dr. Laurent', time: 'Il y a 3 heures' },
+  { action: 'Nouvel étudiant inscrit', user: 'Marie Dubois', time: 'Il y a 5 minutes', initials: 'MD', type: 'Inscription' },
+  { action: 'Espace pédagogique créé', user: 'Prof. Martin', time: 'Il y a 1 heure', initials: 'PM', type: 'Espace' },
+  { action: 'Promotion 2024 mise à jour', user: 'Admin', time: 'Il y a 2 heures', initials: 'AD', type: 'Mise à jour' },
+  { action: 'Nouveau formateur ajouté', user: 'Dr. Laurent', time: 'Il y a 3 heures', initials: 'DL', type: 'Formateur' },
 ];
 
 export const DirecteurDashboard: React.FC = () => {
@@ -122,13 +124,29 @@ export const DirecteurDashboard: React.FC = () => {
           <CardTitle className="text-foreground">Activité récente</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="divide-y divide-gray-200">
             {recentActivities.map((activity, index) => (
-              <div key={index} className="flex items-start gap-4 pb-4 border-b border-gray-200 last:border-0">
-                <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{activity.action}</p>
-                  <p className="text-xs text-gray-600">{activity.user} • {activity.time}</p>
+              <div key={index} className="flex items-center justify-between gap-4 py-3">
+                <div className="flex items-start gap-4">
+                  <Avatar>
+                    <AvatarFallback>{activity.initials}</AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium text-foreground">{activity.action}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <p className="text-xs text-muted-foreground">{activity.user}</p>
+                      <span className="text-xs text-gray-400">•</span>
+                      <p className="text-xs text-gray-400">{activity.time}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="text-xs">{activity.type}</Badge>
+                  <button className="p-1 rounded-md text-gray-400 hover:text-foreground hover:bg-muted">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))}

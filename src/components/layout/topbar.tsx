@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRole } from '../../context/RoleContext';
-import { Search, Bell, Menu } from 'lucide-react';
+import { Search, Bell, Menu, Aperture } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -57,6 +57,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           >
             <Menu className="w-5 h-5" />
           </Button>
+
+          <div className="hidden md:flex items-center text-white">
+            <Aperture className="w-6 h-6" />
+          </div>
 
           <div className="relative flex-1 max-w-md hidden md:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" strokeWidth={1.5} />
