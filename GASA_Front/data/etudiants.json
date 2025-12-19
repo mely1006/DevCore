@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "matricule": "ET2024-001",
+    "nom": "HOUNKPATIN Marie",
+    "email": "marie@gasa.bj",
+    "promotion": "2024-2025"
+  },
+  {
+    "id": 2,
+    "matricule": "ET2024-002",
+    "nom": "ADJAHOUINOU Paul",
+    "email": "paul@gasa.bj",
+    "promotion": "2024-2025"
+  }
+]

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>GASA | Promotions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Custom -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="../index.html">
+      <img src="../assets/logo-gasa.png" class="logo me-2">
+      <strong>GASA</strong>
+    </a>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- SIDEBAR -->
+    <aside class="col-md-2 sidebar p-4">
+      <ul class="nav flex-column gap-2">
+        <li><a href="../index.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+        <li><a href="promotions.html" class="nav-link active"><i class="bi bi-calendar"></i> Promotions</a></li>
+        <li><a href="etudiants.html" class="nav-link"><i class="bi bi-people"></i> Étudiants</a></li>
+        <li><a href="formateurs.html" class="nav-link"><i class="bi bi-person-badge"></i> Formateurs</a></li>
+      </ul>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="col-md-10 p-5">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Gestion des promotions</h3>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPromotion">
+          <i class="bi bi-plus-circle"></i> Nouvelle promotion
+        </button>
+      </div>
+
+      <table class="table table-hover shadow-sm">
+        <thead class="table-light">
+          <tr>
+            <th>Année académique</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="promotionTable"></tbody>
+      </table>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="addPromotion" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nouvelle promotion</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="annee" class="form-control mb-3" placeholder="Ex : 2025-2026">
+        <select id="statut" class="form-control">
+          <option>En cours</option>
+          <option>Clôturée</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="addPromotion()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/promotions.js"></script>
+</body>
+</html>

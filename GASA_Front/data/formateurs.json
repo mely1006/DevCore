@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "nom": "KPADONOU Jean",
+    "email": "jean@gasa.bj",
+    "specialite": "Algorithmique",
+    "statut": "Actif"
+  },
+  {
+    "id": 2,
+    "nom": "HOUNGBEDJI Claire",
+    "email": "claire@gasa.bj",
+    "specialite": "Bases de données",
+    "statut": "Inactif"
+  }
+]
+
+
