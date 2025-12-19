@@ -191,6 +191,19 @@ export async function getUserById(id: string): Promise<User | undefined> {
   return db.get('users', id);
 }
 
+/** Retourne un utilisateur par email (si existe) */
+export async function getUserByEmail(email: string): Promise<User | undefined> {
+  const db = await initDB();
+  try {
+    // utilise l'index 'by-email' qui est défini lors de l'upgrade
+    return await db.getFromIndex('users', 'by-email', email);
+  } catch (e) {
+    // en cas de problème, retourner undefined
+    console.error('getUserByEmail error', e);
+    return undefined;
+  }
+}
+
 export async function getAllPromotions(): Promise<Promotion[]> {
   const db = await initDB();
   return db.getAll('promotions');

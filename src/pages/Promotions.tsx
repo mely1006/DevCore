@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, BookOpen, Plus } from 'lucide-react';
-import { getAllPromotions } from '@/lib/db';
+import { getAllPromotions, getAllUsers } from '@/lib/db';
 import { useNavigate } from 'react-router-dom';
 import type { Promotion } from '@/lib/db';
 import PromotionModal from '@/components/modals/PromotionModal';
@@ -22,8 +22,17 @@ export const Promotions: React.FC = () => {
 
   const loadPromotions = async () => {
     try {
-      const all = await getAllPromotions();
-      setPromotions(all);
+      const [all, users] = await Promise.all([getAllPromotions(), getAllUsers()]);
+      // compute students count per promotion from users
+      const counts = users.reduce<Record<string, number>>((acc, u) => {
+        if (u.role === 'etudiant' && u.promotion) {
+          acc[u.promotion] = (acc[u.promotion] || 0) + 1;
+        }
+        return acc;
+      }, {});
+
+      const enriched = all.map((p) => ({ ...p, students: counts[p.id] ?? p.students ?? 0 }));
+      setPromotions(enriched);
     } catch (error) {
       console.error('Failed to load promotions:', error);
     }
@@ -104,7 +113,7 @@ export const Promotions: React.FC = () => {
       {selectedPromotion && (
         <PromotionStudentsModal
           isOpen={isViewStudentsOpen}
-          onClose={() => { setIsViewStudentsOpen(false); setSelectedPromotion(null); }}
+          onClose={() => { setIsViewStudentsOpen(false); setSelectedPromotion(null); loadPromotions(); }}
           promotionId={selectedPromotion.id}
           promotionLabel={selectedPromotion.label}
         />

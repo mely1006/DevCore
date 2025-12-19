@@ -4,19 +4,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/RoleContext';
+import { useToast } from '@/hooks/use-toast';
+import { getUserByEmail } from '@/lib/db';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useRole();
+  const toast = useToast().toast;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // simulation de connexion — forcer rôle directeur
-    login(email || 'Utilisateur', 'directeur');
-    // naviguer après que le contexte ait été mis à jour
-    setTimeout(() => navigate('/dashboard'), 0);
+    // vérification réelle dans la DB (IndexedDB)
+    try {
+      const user = await getUserByEmail(email.trim());
+      if (!user) {
+        toast({ title: 'Erreur', description: "Email ou mot de passe invalide.", variant: 'destructive' });
+        return;
+      }
+
+      // mot de passe stocké en clair dans cette app démo — comparer directement
+      if (!user.password || user.password !== password) {
+        toast({ title: 'Erreur', description: "Email ou mot de passe invalide.", variant: 'destructive' });
+        return;
+      }
+
+      // connexion réussie
+      login(user.name || user.email, user.role);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Login error', err);
+      toast({ title: 'Erreur', description: 'Impossible de se connecter pour le moment.', variant: 'destructive' });
+    }
   };
 
   return (

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useRole } from '../../context/RoleContext';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Menu, Aperture } from 'lucide-react';
+import { Search, Bell, Menu, Aperture, User, Settings, LogOut } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -14,15 +15,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import ConfirmLogoutModal from '@/components/modals/ConfirmLogoutModal';
 
 interface TopBarProps {
   onMenuClick: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
-  const { role, userName } = useRole();
-  const { setRole } = useRole();
+  const { role, userName, logout } = useRole();
   const navigate = useNavigate();
+  const toast = useToast().toast;
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationCount] = useState(3);
 
@@ -94,33 +97,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
             )}
           </Button>
 
-          {/* Quick view buttons for dashboards (for front-end preview) */}
-          <div className="hidden sm:flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => { setRole('etudiant'); navigate('/dashboard'); }}
-              className="text-foreground"
-            >
-              Étudiant
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => { setRole('formateur'); navigate('/dashboard'); }}
-              className="text-foreground"
-            >
-              Formateur
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => { setRole('directeur'); navigate('/dashboard'); }}
-              className="text-foreground"
-            >
-              Directeur
-            </Button>
-          </div>
+          {/* Quick role buttons removed */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -139,15 +116,45 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-popover text-popover-foreground">
-              <DropdownMenuLabel className="text-popover-foreground">Mon compte</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-popover-foreground cursor-pointer">Profil</DropdownMenuItem>
-              <DropdownMenuItem className="text-popover-foreground cursor-pointer">Paramètres</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-popover-foreground cursor-pointer">Déconnexion</DropdownMenuItem>
-            </DropdownMenuContent>
+              <DropdownMenuContent align="end" className="w-64 bg-popover text-popover-foreground">
+                <DropdownMenuLabel className="text-popover-foreground">Mon compte</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/profile')}>
+                  <div className="flex items-start gap-3">
+                    <User className="w-4 h-4 mt-1 text-gray-500" />
+                    <div className="flex flex-col">
+                      <span className="text-popover-foreground">Profil</span>
+                      <span className="text-xs text-muted-foreground">Voir et modifier vos informations</span>
+                    </div>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/setting')}>
+                  <div className="flex items-start gap-3">
+                    <Settings className="w-4 h-4 mt-1 text-gray-500" />
+                    <div className="flex flex-col">
+                      <span className="text-popover-foreground">Paramètres</span>
+                      <span className="text-xs text-muted-foreground">Préférences de l'application</span>
+                    </div>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem className="cursor-pointer text-destructive" onClick={() => { setIsLogoutOpen(true); try { toast({ title: 'Confirmation', description: "Confirmez la déconnexion dans la fenêtre qui va s'ouvrir." }); } catch (e) { /* ignore */ } }}>
+                  <div className="flex items-center gap-3">
+                    <LogOut className="w-4 h-4 text-destructive" />
+                    <span>Déconnexion</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
           </DropdownMenu>
+            <ConfirmLogoutModal
+              isOpen={isLogoutOpen}
+              onClose={() => setIsLogoutOpen(false)}
+              onConfirm={() => { logout(); setIsLogoutOpen(false); navigate('/login'); }}
+            />
         </div>
       </div>
     </header>
