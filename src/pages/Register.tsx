@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/RoleContext';
 import { addUser } from '@/lib/db';
+import { apiRegister, apiLogin } from '@/lib/api';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
 
@@ -43,16 +44,23 @@ export const Register: React.FC = () => {
             promotion: promotionId,
             phone: phone || undefined,
           };
-
-          await addUser(newUser);
-          toast({ title: 'Étudiant ajouté', description: `Email: ${email} — Mot de passe: ${pwd}` });
+          // try to create on backend first
           try {
-            await navigator.clipboard.writeText(`Email: ${email}\nMot de passe: ${pwd}`);
-            toast({ title: 'Identifiants copiés', description: 'Les identifiants ont été copiés dans le presse-papiers.' });
-          } catch (_) {
-            // ignore clipboard errors
+            await apiRegister({ name: newUser.name, email: newUser.email, password: newUser.password, role: 'etudiant', phone: newUser.phone, promotion: newUser.promotion });
+            toast({ title: 'Étudiant ajouté', description: `Email: ${email} — Mot de passe: ${pwd}` });
+            try {
+              await navigator.clipboard.writeText(`Email: ${email}\nMot de passe: ${pwd}`);
+              toast({ title: 'Identifiants copiés', description: 'Les identifiants ont été copiés dans le presse-papiers.' });
+            } catch (_) {}
+            navigate('/promotions');
+          } catch (err) {
+            // fallback to local IndexedDB if backend unavailable
+            console.warn('Backend register failed, falling back to local DB', err);
+            await addUser(newUser);
+            toast({ title: 'Étudiant ajouté (local)', description: `Email: ${email} — Mot de passe: ${pwd}` });
+            try { await navigator.clipboard.writeText(`Email: ${email}\nMot de passe: ${pwd}`); } catch (_) {}
+            navigate('/promotions');
           }
-          navigate('/promotions');
         } catch (err) {
           console.error('Failed to add student:', err);
           toast({ title: 'Erreur', description: 'Impossible de créer l\'étudiant.', variant: 'destructive' });
@@ -62,9 +70,21 @@ export const Register: React.FC = () => {
     }
 
     // simulation d'inscription -> connexion (rôle par défaut : directeur)
-    login(fullName || email || 'Nouvel utilisateur', 'directeur');
-    // attendre une micro-tâche pour que le contexte soit appliqué
-    setTimeout(() => navigate('/dashboard'), 0);
+    (async () => {
+      try {
+        const pwd = password || Math.random().toString(36).slice(-8);
+        await apiRegister({ name: fullName || email, email, password: pwd, role: 'directeur', phone: phone || undefined });
+        // auto-login
+        const res = await apiLogin(email, pwd);
+        if (res.token) localStorage.setItem('token', res.token);
+        const user = res.user || { name: fullName || email, role: 'directeur' };
+        login(user.name, user.role);
+        navigate('/dashboard');
+      } catch (err) {
+        console.error('Register error', err);
+        toast({ title: 'Erreur', description: 'Impossible de s\'inscrire via le serveur.', variant: 'destructive' });
+      }
+    })();
   };
 
   return (

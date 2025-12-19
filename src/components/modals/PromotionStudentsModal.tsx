@@ -8,6 +8,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Eye, Trash2, Edit } from 'lucide-react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { getStudentsByPromotion as apiGetStudentsByPromotion } from '@/lib/api';
+import { deleteUserApi } from '@/lib/api';
 import { getStudentsByPromotion, deleteUser } from '@/lib/db';
 import type { User } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
@@ -31,8 +33,15 @@ const PromotionStudentsModal: React.FC<Props> = ({ isOpen, onClose, promotionId,
   const load = async () => {
     setLoading(true);
     try {
-      const s = await getStudentsByPromotion(promotionId);
-      setStudents(s);
+      try {
+        const s = await apiGetStudentsByPromotion(promotionId);
+        // adapt backend user shape to local User type if needed
+        const adapted = (s || []).map((u: any) => ({ id: u._id || u.id, name: u.name, email: u.email, phone: u.phone, role: u.role, status: u.status || 'active', createdOn: u.createdAt ? new Date(u.createdAt).toISOString().split('T')[0] : u.createdOn }));
+        setStudents(adapted);
+      } catch (e) {
+        const s = await getStudentsByPromotion(promotionId);
+        setStudents(s);
+      }
     } catch (err) {
       console.error(err);
       toast({ title: 'Erreur', description: `Impossible de charger les étudiants.`, variant: 'destructive' });
@@ -48,7 +57,11 @@ const PromotionStudentsModal: React.FC<Props> = ({ isOpen, onClose, promotionId,
   const handleDelete = async (id: string) => {
     if (!confirm('Supprimer cet étudiant ? Cette action est irréversible.')) return;
     try {
-      await deleteUser(id);
+      try {
+        await deleteUserApi(id);
+      } catch (e) {
+        await deleteUser(id);
+      }
       toast({ title: 'Supprimé', description: "L'étudiant a été supprimé." });
       load();
     } catch (err) {

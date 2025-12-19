@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/RoleContext';
 import { useToast } from '@/hooks/use-toast';
-import { getUserByEmail } from '@/lib/db';
+import { apiLogin } from '@/lib/api';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -16,26 +16,16 @@ export const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // vérification réelle dans la DB (IndexedDB)
     try {
-      const user = await getUserByEmail(email.trim());
-      if (!user) {
-        toast({ title: 'Erreur', description: "Email ou mot de passe invalide.", variant: 'destructive' });
-        return;
-      }
-
-      // mot de passe stocké en clair dans cette app démo — comparer directement
-      if (!user.password || user.password !== password) {
-        toast({ title: 'Erreur', description: "Email ou mot de passe invalide.", variant: 'destructive' });
-        return;
-      }
-
-      // connexion réussie
-      login(user.name || user.email, user.role);
+      const res = await apiLogin(email.trim(), password);
+      // save token
+      if (res.token) localStorage.setItem('token', res.token);
+      const user = res.user || { id: res.id, name: res.name, role: res.role };
+      login(user.name || email, user.role || 'etudiant');
       navigate('/dashboard');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login error', err);
-      toast({ title: 'Erreur', description: 'Impossible de se connecter pour le moment.', variant: 'destructive' });
+      toast({ title: 'Erreur', description: err?.body?.message || 'Email ou mot de passe invalide.', variant: 'destructive' });
     }
   };
 

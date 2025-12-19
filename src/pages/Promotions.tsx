@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, BookOpen, Plus } from 'lucide-react';
 import { getAllPromotions, getAllUsers } from '@/lib/db';
+import { getPromotions as apiGetPromotions, getStudentsByPromotion as apiGetStudentsByPromotion } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
 import type { Promotion } from '@/lib/db';
 import PromotionModal from '@/components/modals/PromotionModal';
@@ -22,17 +23,31 @@ export const Promotions: React.FC = () => {
 
   const loadPromotions = async () => {
     try {
-      const [all, users] = await Promise.all([getAllPromotions(), getAllUsers()]);
-      // compute students count per promotion from users
-      const counts = users.reduce<Record<string, number>>((acc, u) => {
-        if (u.role === 'etudiant' && u.promotion) {
-          acc[u.promotion] = (acc[u.promotion] || 0) + 1;
-        }
-        return acc;
-      }, {});
-
-      const enriched = all.map((p) => ({ ...p, students: counts[p.id] ?? p.students ?? 0 }));
-      setPromotions(enriched);
+      // try backend first
+      try {
+        const promos = await apiGetPromotions();
+        // enrich with students count by calling students endpoint per promotion
+        const enriched = await Promise.all(promos.map(async (p: any) => {
+          try {
+            const students = await apiGetStudentsByPromotion(p._id || p.id);
+            return { id: p._id || p.id, label: p.label, year: p.year, students: (students || []).length, spaces: p.spaces || 0 };
+          } catch (e) {
+            return { id: p._id || p.id, label: p.label, year: p.year, students: p.students ?? 0, spaces: p.spaces || 0 };
+          }
+        }));
+        setPromotions(enriched as any);
+      } catch (err) {
+        // fallback to local DB
+        const [all, users] = await Promise.all([getAllPromotions(), getAllUsers()]);
+        const counts = users.reduce<Record<string, number>>((acc, u) => {
+          if (u.role === 'etudiant' && u.promotion) {
+            acc[u.promotion] = (acc[u.promotion] || 0) + 1;
+          }
+          return acc;
+        }, {});
+        const enriched = all.map((p) => ({ ...p, students: counts[p.id] ?? p.students ?? 0 }));
+        setPromotions(enriched);
+      }
     } catch (error) {
       console.error('Failed to load promotions:', error);
     }

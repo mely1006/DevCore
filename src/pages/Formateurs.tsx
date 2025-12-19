@@ -20,6 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import StudentModal from '@/components/modals/StudentModal';
 import { getAllUsers, deleteUser } from '../lib/db';
+import { getUsers as apiGetUsers, deleteUserApi as apiDeleteUser } from '@/lib/api';
 import type { User } from '../lib/db';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,8 +38,14 @@ export const Formateurs: React.FC = () => {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const allUsers = await getAllUsers();
-      setUsers(allUsers);
+      try {
+        const res = await apiGetUsers();
+        const adapted = (res || []).map((u: any) => ({ id: u._id || u.id, name: u.name, email: u.email, phone: u.phone, role: u.role, status: u.status || 'active' }));
+        setUsers(adapted as any);
+      } catch (err) {
+        const allUsers = await getAllUsers();
+        setUsers(allUsers);
+      }
     } catch (error) {
       console.error('Failed to load formateurs:', error);
       toast({
@@ -53,7 +60,11 @@ export const Formateurs: React.FC = () => {
 
   const handleDeleteUser = async (id: string) => {
     try {
-      await deleteUser(id);
+      try {
+        await apiDeleteUser(id);
+      } catch (e) {
+        await deleteUser(id);
+      }
       toast({
         title: 'Formateur supprimé',
         description: 'Le formateur a été supprimé avec succès',

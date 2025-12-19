@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { addUser, updateUser, getUserById } from '@/lib/db';
+import { createUser as apiCreateUser, updateUserApi as apiUpdateUser } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
 interface StudentModalProps {
@@ -91,7 +92,11 @@ export const StudentModal: React.FC<StudentModalProps> = ({ isOpen, onClose, pro
         if (password) {
           updated.password = pwd;
         }
-        await updateUser(updated as any);
+        try {
+          await apiUpdateUser(editUserId, { name: updated.name, email: updated.email, phone: updated.phone, promotion: updated.promotion });
+        } catch (err) {
+          await updateUser(updated as any);
+        }
       } else {
         const newUser = {
           id: uuidv4(),
@@ -104,7 +109,12 @@ export const StudentModal: React.FC<StudentModalProps> = ({ isOpen, onClose, pro
           promotion: role === 'etudiant' ? promotionId : undefined,
           phone: phone || undefined,
         };
-        await addUser(newUser);
+        // try backend first (admin endpoint), fallback to local DB
+        try {
+          await apiCreateUser({ name: newUser.name, email: newUser.email, password: newUser.password, role: newUser.role, phone: newUser.phone, promotion: newUser.promotion });
+        } catch (err) {
+          await addUser(newUser);
+        }
         try {
           const saved = {
             email,
@@ -116,7 +126,6 @@ export const StudentModal: React.FC<StudentModalProps> = ({ isOpen, onClose, pro
           };
           localStorage.setItem('lastStudentCredentials', JSON.stringify(saved));
         } catch (storageError) {
-          // ignore localStorage errors
           console.warn('localStorage not available', storageError);
         }
       }

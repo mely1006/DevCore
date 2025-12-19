@@ -18,6 +18,11 @@ export default defineConfig({
   plugins: [react()],
   publicDir: "./static",
   base: "./",
+  server: {
+    host: "localhost",
+    port: 5173,
+    strictPort: true,
+  },
   css: {
     postcss: {
       plugins: [tailwind()],
