@@ -23,10 +23,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       roles: ['directeur', 'formateur', 'etudiant'] 
     },
     { 
-      path: '/utilisateurs', 
-      label: 'Utilisateurs', 
+      path: '/formateurs', 
+      label: 'Formateurs', 
       icon: Users, 
-      roles: ['directeur'] 
+      roles: ['directeur', 'formateur'] 
     },
     { 
       path: '/promotions', 
@@ -70,7 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
         <div className="p-8 flex items-center justify-between">
           {isOpen && (
             <h1 className="font-heading font-bold text-xl ">
-              Université Casa
+              Université Gasa
             </h1>
           )}
           <Button

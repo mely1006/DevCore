@@ -10,13 +10,15 @@ export interface User {
   createdOn: string;
   password?: string;
   promotion?: string;
+  phone?: string;
 }
 
-interface Promotion {
+export interface Promotion {
   id: string;
   year: string;
   students: number;
   spaces: number;
+  label?: string;
 }
 
 interface PedagogicalSpace {
@@ -108,7 +110,7 @@ export async function initDB(): Promise<IDBPDatabase<UniversityCasaDB>> {
 /** Seed database with initial demo data if empty */
 export async function seedDatabase(): Promise<void> {
   const db = await initDB();
-  const tx = db.transaction('users', 'readwrite');
+  const tx = db.transaction(['users', 'promotions'], 'readwrite');
   const userStore = tx.objectStore('users');
   const existing = await userStore.getAll();
   if (existing.length === 0) {
@@ -121,6 +123,7 @@ export async function seedDatabase(): Promise<void> {
         role: 'directeur',
         status: 'active',
         createdOn: now,
+        phone: '+212600000001',
       },
       {
         id: crypto.randomUUID(),
@@ -129,6 +132,7 @@ export async function seedDatabase(): Promise<void> {
         role: 'formateur',
         status: 'active',
         createdOn: now,
+        phone: '+212600000002',
       },
       {
         id: crypto.randomUUID(),
@@ -137,10 +141,26 @@ export async function seedDatabase(): Promise<void> {
         role: 'etudiant',
         status: 'inactive',
         createdOn: now,
+        phone: '+212600000003',
       },
     ];
     for (const u of demoUsers) {
       await userStore.add(u);
+    }
+  }
+  // seed promotions if empty
+  const promoStore = tx.objectStore('promotions');
+  const existingPromos = await promoStore.getAll();
+  if (existingPromos.length === 0) {
+    const demoPromos: Promotion[] = [
+      { id: crypto.randomUUID(), year: '2020', students: 180, spaces: 15 },
+      { id: crypto.randomUUID(), year: '2021', students: 210, spaces: 16 },
+      { id: crypto.randomUUID(), year: '2022', students: 195, spaces: 14 },
+      { id: crypto.randomUUID(), year: '2023', students: 225, spaces: 18 },
+      { id: crypto.randomUUID(), year: '2024', students: 246, spaces: 20 },
+    ];
+    for (const p of demoPromos) {
+      await promoStore.add(p);
     }
   }
   await tx.done;
@@ -159,4 +179,31 @@ export async function deleteUser(id: string): Promise<void> {
 export async function addUser(user: User): Promise<void> {
   const db = await initDB();
   await db.add('users', user);
+}
+
+export async function updateUser(user: User): Promise<void> {
+  const db = await initDB();
+  await db.put('users', user);
+}
+
+export async function getUserById(id: string): Promise<User | undefined> {
+  const db = await initDB();
+  return db.get('users', id);
+}
+
+export async function getAllPromotions(): Promise<Promotion[]> {
+  const db = await initDB();
+  return db.getAll('promotions');
+}
+
+export async function addPromotion(promo: Promotion): Promise<void> {
+  const db = await initDB();
+  await db.add('promotions', promo);
+}
+
+/** Retourne tous les étudiants inscrits pour une promotion donnée */
+export async function getStudentsByPromotion(promotionId: string): Promise<User[]> {
+  const db = await initDB();
+  const all = await db.getAll('users');
+  return all.filter((u) => u.role === 'etudiant' && u.promotion === promotionId);
 }

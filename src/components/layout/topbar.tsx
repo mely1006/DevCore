@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRole } from '../../context/RoleContext';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, Aperture } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,8 @@ interface TopBarProps {
 
 export const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   const { role, userName } = useRole();
+  const { setRole } = useRole();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationCount] = useState(3);
 
@@ -90,6 +93,34 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
               </Badge>
             )}
           </Button>
+
+          {/* Quick view buttons for dashboards (for front-end preview) */}
+          <div className="hidden sm:flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { setRole('etudiant'); navigate('/dashboard'); }}
+              className="text-foreground"
+            >
+              Étudiant
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { setRole('formateur'); navigate('/dashboard'); }}
+              className="text-foreground"
+            >
+              Formateur
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { setRole('directeur'); navigate('/dashboard'); }}
+              className="text-foreground"
+            >
+              Directeur
+            </Button>
+          </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -32,14 +32,14 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
     name: '',
     email: '',
     role: '',
-    promotion: '',
+    phone: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      const newUser = {
+          const newUser = {
         id: uuidv4(),
         name: formData.name,
         email: formData.email,
@@ -47,7 +47,7 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
         status: 'active' as const,
         createdOn: new Date().toISOString().split('T')[0],
         password: 'temp123',
-        promotion: formData.promotion || undefined,
+          phone: formData.phone || undefined,
       };
 
       await addUser(newUser);
@@ -57,7 +57,7 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
         description: "L'utilisateur a été ajouté avec succès.",
       });
       
-      setFormData({ name: '', email: '', role: '', promotion: '' });
+      setFormData({ name: '', email: '', role: '', phone: '' });
       onClose();
     } catch (error) {
       console.error('Failed to create user:', error);
@@ -118,22 +118,20 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="promotion" className="text-popover-foreground">Promotion (optionnel)</Label>
-              <Select value={formData.promotion} onValueChange={(value) => setFormData({ ...formData, promotion: value })}>
-                <SelectTrigger className="bg-gray-50 border-gray-200 text-foreground">
-                  <SelectValue placeholder="Sélectionner une promotion" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover text-popover-foreground">
-                  <SelectItem value="2020" className="text-popover-foreground">Promotion 2020</SelectItem>
-                  <SelectItem value="2021" className="text-popover-foreground">Promotion 2021</SelectItem>
-                  <SelectItem value="2022" className="text-popover-foreground">Promotion 2022</SelectItem>
-                  <SelectItem value="2023" className="text-popover-foreground">Promotion 2023</SelectItem>
-                  <SelectItem value="2024" className="text-popover-foreground">Promotion 2024</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="phone" className="text-popover-foreground">Téléphone</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="+2126XXXXXXXX"
+                className="bg-gray-50 border-gray-200 text-foreground placeholder:text-gray-400"
+              />
             </div>
+            
+            
           </div>
           
           <DialogFooter>

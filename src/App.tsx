@@ -4,7 +4,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import { UserManagement } from './pages/UserManagement';
+import { Formateurs } from './pages/Formateurs';
 import { Promotions } from './pages/Promotions';
 import { PedagogicalSpaces } from './pages/PedagogicalSpaces';
 import { Statistics } from './pages/Statistics';
@@ -65,11 +65,11 @@ function App() {
             />
 
             <Route
-              path="/utilisateurs"
+              path="/formateurs"
               element={
                 <RequireAuth>
                   <AppLayout>
-                    <UserManagement />
+                    <Formateurs />
                   </AppLayout>
                 </RequireAuth>
               }
