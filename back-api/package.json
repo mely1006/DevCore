@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon --watch src --exec node src/index.js",
-    "test": "cross-env NODE_ENV=test MONGO_URI=mongodb://127.0.0.1:27017/gasaunivers_test jest --runInBand"
+    "test": "cross-env NODE_ENV=test MONGO_URI=mongodb://127.0.0.1:27017/gasaunivers_test jest --runInBand",
+    "db:schema": "mongosh --quiet --file scripts/db_schema.mongo.js"
   },
   "engines": {
     "node": ">=16"
