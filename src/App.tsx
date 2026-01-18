@@ -20,6 +20,12 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function RequireDirector({ children }: { children: React.ReactNode }) {
+  const { role } = useRole();
+  if (role !== 'directeur') return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
 function App() {
   useEffect(() => {
     const setupDatabase = async () => {
@@ -68,9 +74,11 @@ function App() {
               path="/formateurs"
               element={
                 <RequireAuth>
-                  <AppLayout>
-                    <Formateurs />
-                  </AppLayout>
+                  <RequireDirector>
+                    <AppLayout>
+                      <Formateurs />
+                    </AppLayout>
+                  </RequireDirector>
                 </RequireAuth>
               }
             />

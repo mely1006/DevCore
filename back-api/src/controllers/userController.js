@@ -12,14 +12,19 @@ const getAll = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
+    const requester = req.user || {};
+    if (requester.role !== 'directeur') {
+      return res.status(403).json({ message: 'Forbidden: admin only' });
+    }
     const bcrypt = require('bcrypt');
     const { name, email, password, role, phone, promotion } = req.body;
-    if (!email || !password || !name) return res.status(400).json({ message: 'Missing fields' });
-    const existing = await User.findOne({ email });
+    const normalizedEmail = (email || '').trim().toLowerCase();
+    if (!normalizedEmail || !password || !name) return res.status(400).json({ message: 'Missing fields' });
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing) return res.status(400).json({ message: 'Email already in use' });
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
-    const user = await User.create({ name, email, password: hash, role, phone, promotion });
+    const user = await User.create({ name, email: normalizedEmail, password: hash, role, phone, promotion });
     res.status(201).json(user);
   } catch (err) {
     console.error(err);
@@ -40,6 +45,10 @@ const getById = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
+    const requester = req.user || {};
+    if (requester.role !== 'directeur') {
+      return res.status(403).json({ message: 'Forbidden: admin only' });
+    }
     const updates = req.body;
     delete updates.password; // password change via dedicated route (not implemented)
     const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true }).populate('promotion');
@@ -53,6 +62,10 @@ const updateUser = async (req, res) => {
 
 const removeUser = async (req, res) => {
   try {
+    const requester = req.user || {};
+    if (requester.role !== 'directeur') {
+      return res.status(403).json({ message: 'Forbidden: admin only' });
+    }
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ message: 'Not found' });
     res.json({ message: 'Deleted' });

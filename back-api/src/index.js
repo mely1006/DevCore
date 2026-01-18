@@ -16,6 +16,7 @@ connectDB();
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/promotions', require('./routes/promotions'));
+app.use('/api/works', require('./routes/works'));
 
 app.get('/', (req, res) => res.send({ ok: true, name: 'gasaunivers-back-api' }));
 

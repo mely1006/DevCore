@@ -52,13 +52,47 @@
     additionalProperties: true,
   };
 
+  const workSchema = {
+    bsonType: 'object',
+    required: ['title', 'type', 'startDate', 'endDate', 'createdAt', 'createdBy'],
+    properties: {
+      title: { bsonType: 'string', minLength: 1, description: 'Titre du travail' },
+      description: { bsonType: ['string', 'null'], description: 'Description' },
+      type: { enum: ['individuel', 'collectif'], description: 'Type de travail' },
+      startDate: { bsonType: 'date', description: 'Date de début' },
+      endDate: { bsonType: 'date', description: 'Date de fin' },
+      createdAt: { bsonType: 'date', description: 'Date de création' },
+      createdBy: { bsonType: 'objectId', description: 'Référence du formateur' },
+      promotion: { bsonType: ['objectId', 'null'], description: 'Promotion cible (optionnel)' },
+      assignees: { bsonType: ['array'], items: { bsonType: 'objectId' }, description: 'Liste des étudiants assignés' },
+      assignments: {
+        bsonType: ['array'],
+        description: 'Assignations par groupe ou individu avec dates',
+        items: {
+          bsonType: 'object',
+          required: ['assignees', 'startDate', 'endDate'],
+          properties: {
+            assignees: { bsonType: ['array'], items: { bsonType: 'objectId' } },
+            startDate: { bsonType: 'date' },
+            endDate: { bsonType: 'date' },
+            groupName: { bsonType: ['string', 'null'] },
+            createdAt: { bsonType: 'date' },
+          },
+        },
+      },
+    },
+    additionalProperties: true,
+  };
+
   // Create/Update validators
   ensureCollection('users', userSchema);
   ensureCollection('promotions', promotionSchema);
+  ensureCollection('works', workSchema);
 
   // Indexes
   database.users.createIndex({ email: 1 }, { unique: true });
   database.promotions.createIndex({ label: 1, year: 1 }, { unique: true });
+  database.works.createIndex({ createdBy: 1, createdAt: -1 });
 
   // Summary
   print('--- Collections ---');

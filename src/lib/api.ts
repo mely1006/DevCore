@@ -63,3 +63,27 @@ export async function deleteUserApi(id: string) {
 }
 
 export default { apiLogin, apiRegister, getPromotions, createPromotion, getStudentsByPromotion, getUsers };
+
+export async function getMyWorks() {
+  return request('/api/works');
+}
+
+export async function createWork(payload: { title: string; description?: string; type: 'individuel'|'collectif'; startDate: string; endDate: string; promotion?: string; assignees?: string[]; groupName?: string }) {
+  return request('/api/works', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateWork(id: string, payload: Partial<{ title: string; description: string; type: 'individuel'|'collectif'; startDate: string; endDate: string; promotion?: string }>) {
+  return request(`/api/works/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+}
+
+export async function deleteWork(id: string) {
+  return request(`/api/works/${id}`, { method: 'DELETE' });
+}
+
+export async function assignWork(id: string, payload: { assignees: string[]; startDate: string; endDate: string; groupName?: string }) {
+  return request(`/api/works/${id}/assign`, { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function getWorkById(id: string) {
+  return request(`/api/works/${id}`);
+}

@@ -18,7 +18,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import StudentModal from '@/components/modals/StudentModal';
+import { UserModal } from '@/components/modals/UserModal';
+import { UserEditModal } from '@/components/modals/UserEditModal';
 import { getAllUsers, deleteUser } from '../lib/db';
 import { getUsers as apiGetUsers, deleteUserApi as apiDeleteUser } from '@/lib/api';
 import type { User } from '../lib/db';
@@ -29,6 +30,7 @@ export const Formateurs: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -182,7 +184,7 @@ export const Formateurs: React.FC = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-popover text-popover-foreground">
-                          <DropdownMenuItem className="text-popover-foreground cursor-pointer">
+                          <DropdownMenuItem className="text-popover-foreground cursor-pointer" onClick={() => setEditingUser(user)}>
                             <Pencil className="w-4 h-4 mr-2" strokeWidth={1.5} />
                             Modifier
                           </DropdownMenuItem>
@@ -201,14 +203,21 @@ export const Formateurs: React.FC = () => {
         </CardContent>
       </Card>
 
-      <StudentModal
+      <UserModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           loadUsers();
         }}
-        role="formateur"
       />
+
+      {editingUser && (
+        <UserEditModal
+          isOpen={!!editingUser}
+          onClose={() => { setEditingUser(null); loadUsers(); }}
+          user={{ id: editingUser.id, name: editingUser.name, email: editingUser.email, phone: editingUser.phone, role: editingUser.role }}
+        />
+      )}
     </div>
   );
 };

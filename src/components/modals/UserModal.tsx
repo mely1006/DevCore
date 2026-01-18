@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { addUser } from '@/lib/db';
+import { createUser as apiCreateUser } from '@/lib/api';
 
 interface UserModalProps {
   isOpen: boolean;
@@ -33,31 +32,29 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
     email: '',
     role: '',
     phone: '',
+    password: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-          const newUser = {
-        id: uuidv4(),
-        name: formData.name,
-        email: formData.email,
-        role: formData.role as 'directeur' | 'formateur' | 'etudiant',
-        status: 'active' as const,
-        createdOn: new Date().toISOString().split('T')[0],
-        password: 'temp123',
-          phone: formData.phone || undefined,
-      };
+          const payload = {
+            name: formData.name,
+            email: formData.email.trim().toLowerCase(),
+            password: formData.password,
+            role: formData.role || undefined,
+            phone: formData.phone || undefined,
+          };
 
-      await addUser(newUser);
+          await apiCreateUser(payload as any);
       
       toast({
         title: "Utilisateur créé",
         description: "L'utilisateur a été ajouté avec succès.",
       });
       
-      setFormData({ name: '', email: '', role: '', phone: '' });
+  setFormData({ name: '', email: '', role: '', phone: '', password: '' });
       onClose();
     } catch (error) {
       console.error('Failed to create user:', error);
@@ -71,7 +68,7 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-popover text-popover-foreground">
+  <DialogContent className="sm:max-w-[500px] bg-popover text-popover-foreground">
         <DialogHeader>
           <DialogTitle className="text-popover-foreground">Ajouter un utilisateur</DialogTitle>
           <DialogDescription className="text-gray-600">
@@ -100,6 +97,19 @@ export const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose }) => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="jean.dupont@univ.ma"
+                required
+                className="bg-gray-50 border-gray-200 text-foreground placeholder:text-gray-400"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-popover-foreground">Mot de passe</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="••••••••"
                 required
                 className="bg-gray-50 border-gray-200 text-foreground placeholder:text-gray-400"
               />

@@ -26,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       path: '/formateurs', 
       label: 'Formateurs', 
       icon: Users, 
-      roles: ['directeur', 'formateur'] 
+      roles: ['directeur'] 
     },
     { 
       path: '/promotions', 

@@ -1,92 +1,51 @@
-# GasaUnivers – Guide d’installation (Front + Back)
+# GasaUnivers – Résumé & démarrage
 
-Ce projet contient:
-- Frontend React + TypeScript (Vite)
-- Backend Node.js + Express + MongoDB (dossier `back-api`)
+Projet full‑stack pour la gestion universitaire:
+- Frontend: React + TypeScript (Vite)
+- Backend: Node.js + Express + MongoDB (dans `back-api`)
 
-## Prérequis
-- Node.js ≥ 18 (recommandé)
-- npm
-- MongoDB Community Server (local)
+## Ce qu’il faut utiliser
+- Node.js ≥ 18 et npm
+- MongoDB (serveur local)
+- Variables d’environnement:
+  - Backend (`back-api/.env`):
+    - `MONGO_URI=mongodb://127.0.0.1:27017/gasaunivers`
+    - `PORT=5000`
+    - `JWT_SECRET=change_this_secret`
+  - Frontend (racine):
+    - `VITE_API_BASE=http://localhost:5000`
 
-## Backend (back-api)
-1. Installer les dépendances:
-```bash
+## Démarrer le projet (développement)
+
+1) Démarrer l’API (terminal 1)
+```zsh
 cd back-api
 npm install
-```
-2. Configurer l’environnement:
-```bash
-cp .env.example .env
-# Éditer .env
-# MONGO_URI=mongodb://127.0.0.1:27017/gasaunivers
-# PORT=5000
-# JWT_SECRET=change_this_secret
-```
-3. Appliquer le schéma (validateurs + index):
-```bash
-npm run db:schema
-```
-4. Lancer en développement:
-```bash
-npm run dev
-# API disponible sur http://localhost:5000
-```
-5. Tests d’intégration:
-```bash
-npm test
+cp .env.example .env    # ou créez .env et placez MONGO_URI/JWT_SECRET/PORT
+npm run db:schema       # applique validateurs & index MongoDB (optionnel mais recommandé)
+npm run dev             # API sur http://localhost:5000
 ```
 
-Endpoints principaux:
-- POST `/api/auth/register` → crée un utilisateur (name, email, password, role)
-- POST `/api/auth/login` → renvoie `{ token, user }`
-- GET/POST `/api/promotions` (JWT requis)
-- GET `/api/promotions/:id/students` (JWT requis)
-- GET/POST/PUT/DELETE `/api/users` (JWT requis)
-
-## Frontend
-1. Installer les dépendances (à la racine):
-```bash
+2) Démarrer le Front (terminal 2)
+```zsh
 npm install
-```
-2. Configurer l’URL de l’API:
-```bash
 echo 'VITE_API_BASE=http://localhost:5000' > .env.local
-```
-3. Lancer le serveur de dev (Vite):
-```bash
-npm run dev
-# Front disponible sur http://127.0.0.1:5173
+npm run dev             # Front sur http://127.0.0.1:5173
 ```
 
-Identifiants de test:
-- Email: `e2e-admin@example.com`
-- Mot de passe: `Admin123!`
+## Parcours admin → formateur
+- Le directeur (admin) crée le compte formateur via la page “Formateurs”.
+- Le formateur se connecte avec l’email et le mot de passe définis.
+- Le tableau de bord formateur permet de créer et gérer les travaux; l’assignation se consulte via “Voir assignations”.
+- La gestion des formateurs et des espaces pédagogiques (créer/modifier/supprimer) est réservée au directeur.
 
-## Vérification MongoDB (mongosh)
-```bash
-mongosh
-use gasaunivers
-show collections
-db.users.find({}, { password: 0 }).pretty()
-db.promotions.find().pretty()
+## Tests backend (optionnel)
+```zsh
+npm run test --prefix back-api
 ```
 
-## Dépannage
-- Page blanche via proxy/Apache: ouvrez `http://127.0.0.1:5173` (pas `localhost`), ou ajoutez une exception dans votre proxy pour les adresses locales.
-- Conflits de ports Vite (5173): arrêter les instances existantes (ex: `fuser -k 5173/tcp`) et relancer.
-- Authorization: les requêtes protégées doivent inclure `Authorization: Bearer <token>`.
+## Dépannage rapide
+- Si le front n’arrive pas à joindre l’API: vérifiez `VITE_API_BASE` et que l’API tourne sur `http://localhost:5000`.
+- Conflit de port Vite 5173: relancez `npm run dev` ou changez de port (`npm run dev -- --port 5174`).
+- Requêtes protégées: fournissez `Authorization: Bearer <token>` (token obtenu via `/api/auth/login`).
 
-## Scripts utiles
-- Front:
-  - `npm run dev` – démarre Vite
-  - `npm run build` – build du front
-  - `npm run preview` – prévisualisation du build
-- Back (`back-api`):
-  - `npm run dev` – démarre l’API en dev
-  - `npm run db:schema` – applique schémas et index MongoDB
-  - `npm test` – lance les tests d’intégration
-
-## Notes
-- Le front utilise `import.meta.env.VITE_API_BASE` pour l’adresse de l’API.
-- L’API nécessite MongoDB en local et un `JWT_SECRET` défini dans `.env`.
