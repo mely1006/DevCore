@@ -64,3 +64,9 @@ npm i
 # Backend
 cd /Users/juliettesounouvou/Desktop/riri/happy/NODE/back-api
 npm i
+
+
+# Mettre à jour vos références distantes:
+git fetch --all --prune
+
+git branch -a

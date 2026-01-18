@@ -25,6 +25,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
+    
     const { email, password } = req.body;
     const normalizedEmail = (email || '').trim().toLowerCase();
     if (!normalizedEmail || !password) {
@@ -40,9 +41,12 @@ const login = async (req, res) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET || 'change_this_secret', { expiresIn: '7d' });
     res.json({ token, user: payload });
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+
 module.exports = { register, login };
+
