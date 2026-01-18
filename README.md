@@ -49,3 +49,18 @@ npm run test --prefix back-api
 - Conflit de port Vite 5173: relancez `npm run dev` ou changez de port (`npm run dev -- --port 5174`).
 - Requêtes protégées: fournissez `Authorization: Bearer <token>` (token obtenu via `/api/auth/login`).
 
+juliettesounouvou@MacBook-Air-de-Juliette back-api % # Frontend
+cd /Users/juliettesounouvou/Desktop/riri/happy/NODE
+npm i
+
+# Backend
+cd /Users/juliettesounouvou/Desktop/riri/happy/NODE/back-api
+npm i
+
+juliettesounouvou@MacBook-Air-de-Juliette back-api % # Frontend
+cd /Users/juliettesounouvou/Desktop/riri/happy/NODE
+npm i
+
+# Backend
+cd /Users/juliettesounouvou/Desktop/riri/happy/NODE/back-api
+npm i
