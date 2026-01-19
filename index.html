@@ -1,13 +1,290 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>novo</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFlow | Dashboard Elite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+            --sidebar: #ffffff;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Chic */
+        .sidebar {
+            background: var(--sidebar);
+            border-right: 1px solid #e2e8f0;
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: #64748b;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .nav-link i { width: 20px; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 16.666667%;
+            padding: 2rem 3rem;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: white;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .glass-card:hover { transform: translateY(-5px); }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <div class="col-md-2 sidebar">
+            <div class="d-flex align-items-center gap-2 mb-5 px-2">
+                <div class="bg-primary p-2 rounded-3 text-white">
+                    <i data-lucide="graduation-cap"></i>
+                </div>
+                <h4 class="fw-bold mb-0" style="letter-spacing: -1px;">UniTask</h4>
+            </div>
+            
+            <nav>
+                <a href="#" class="nav-link active" onclick="switchView('directeur', this)">
+                    <i data-lucide="shield-check"></i> Directeur
+                </a>
+                <a href="#" class="nav-link" onclick="switchView('formateur', this)">
+                    <i data-lucide="users"></i> Formateur
+                </a>
+                <a href="#" class="nav-link" onclick="switchView('etudiant', this)">
+                    <i data-lucide="book-open"></i> Étudiant
+                </a>
+            </nav>
+
+            <div class="mt-auto pt-5">
+                <div class="glass-card bg-light p-3">
+                    <p class="small text-muted mb-0">Connecté en tant que</p>
+                    <p class="fw-bold mb-0">Admin Université</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10 main-content">
+            
+            <div id="directeur" class="section active">
+                <header class="mb-5">
+                    <h2 class="fw-700">Tableau de bord Directeur</h2>
+                    <p class="text-muted">Gérez vos formateurs, étudiants et espaces.</p>
+                </header>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="glass-card">
+                            <div class="stat-icon bg-primary-subtle text-primary"><i data-lucide="user-plus"></i></div>
+                            <h5>Créer un compte</h5>
+                            <div class="mt-3">
+                                <input type="text" id="newUserName" class="form-control mb-2" placeholder="Nom complet">
+                                <select id="newUserRole" class="form-select mb-3">
+                                    <option value="Formateur">Formateur</option>
+                                    <option value="Étudiant">Étudiant</option>
+                                </select>
+                                <button class="btn btn-primary w-100" onclick="handleCreateUser()">Enregistrer</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="glass-card h-100">
+                            <h5>Utilisateurs récents</h5>
+                            <table class="table align-middle mt-3">
+                                <thead class="text-muted small">
+                                    <tr><th>NOM</th><th>RÔLE</th><th>STATUT</th></tr>
+                                </thead>
+                                <tbody id="usersList">
+                                    <tr><td>Dr. Marc Dupont</td><td><span class="badge bg-soft-primary text-primary">Formateur</span></td><td><span class="text-success">● Actif</span></td></tr>
+                                    <tr><td>Sophie Vasseur</td><td><span class="badge bg-soft-info text-info">Étudiant</span></td><td><span class="text-success">● Actif</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="formateur" class="section">
+                <header class="mb-5">
+                    <h2 class="fw-700">Espace Formateur</h2>
+                    <p class="text-muted">Attribuez des devoirs et suivez la progression.</p>
+                </header>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="glass-card shadow-sm">
+                            <h5 class="mb-4">Nouvelle Tâche</h5>
+                            <label class="small fw-bold">Titre</label>
+                            <input type="text" id="taskName" class="form-control mb-3" placeholder="Ex: TP Algorithmique">
+                            <label class="small fw-bold">Étudiant</label>
+                            <input type="text" id="taskDest" class="form-control mb-3" placeholder="Nom de l'étudiant">
+                            <button class="btn btn-primary w-100" onclick="handleAssignTask()">Assigner par Email</button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="glass-card">
+                            <h5>Suivi des exécutions</h5>
+                            <div id="taskBoard" class="mt-4">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="etudiant" class="section">
+                <header class="mb-5">
+                    <h2 class="fw-700">Mon Espace Étudiant</h2>
+                    <p class="text-muted">Consultez vos tâches et mettez à jour votre avancement.</p>
+                </header>
+                <div id="studentTaskGrid" class="row g-4">
+                    </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialisation des icônes
+    lucide.createIcons();
+
+    // Navigation
+    function switchView(viewId, element) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        
+        document.getElementById(viewId).classList.add('active');
+        element.classList.add('active');
+    }
+
+    // Logique Directeur
+    function handleCreateUser() {
+        const name = document.getElementById('newUserName').value;
+        const role = document.getElementById('newUserRole').value;
+        if(!name) return alert("Veuillez saisir un nom");
+        
+        const row = `<tr><td>${name}</td><td><span class="badge bg-light text-dark border">${role}</span></td><td><span class="text-success">● Actif</span></td></tr>`;
+        document.getElementById('usersList').insertAdjacentHTML('afterbegin', row);
+        document.getElementById('newUserName').value = "";
+    }
+
+    // Logique Formateur
+    function handleAssignTask() {
+        const title = document.getElementById('taskName').value;
+        const student = document.getElementById('taskDest').value;
+        if(!title || !student) return alert("Champs vides !");
+
+        const taskId = Date.now();
+
+        // Ajout vue Formateur
+        const trackRow = `<div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded-4" id="track-${taskId}">
+            <div><h6 class="mb-0">${title}</h6><small class="text-muted">Assigné à ${student}</small></div>
+            <span class="badge bg-warning-subtle text-warning badge-status">En cours</span>
+        </div>`;
+        document.getElementById('taskBoard').insertAdjacentHTML('afterbegin', trackRow);
+
+        // Ajout vue Étudiant
+        const studentCard = `<div class="col-md-6" id="card-${taskId}">
+            <div class="glass-card border-start border-primary border-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="mb-0">${title}</h5>
+                    <i data-lucide="clock" class="text-muted"></i>
+                </div>
+                <p class="small text-muted">Statut: <span id="status-${taskId}">À faire</span></p>
+                <button class="btn btn-sm btn-outline-primary" onclick="completeTask('${taskId}')">Marquer comme terminé</button>
+            </div>
+        </div>`;
+        document.getElementById('studentTaskGrid').insertAdjacentHTML('afterbegin', studentCard);
+        
+        lucide.createIcons();
+        alert(`Notification mail envoyée à ${student} !`);
+    }
+
+    function completeTask(id) {
+        document.getElementById(`status-${id}`).innerText = "Terminé ✅";
+        document.getElementById(`status-${id}`).classList.replace('text-muted', 'text-success');
+        // Update formateur board status
+        const track = document.querySelector(`#track-${id} .badge-status`);
+        track.innerText = "Terminé";
+        track.classList.replace('bg-warning-subtle', 'bg-success-subtle');
+        track.classList.replace('text-warning', 'text-success');
+    }
+</script>
+
+</body>
 </html>
