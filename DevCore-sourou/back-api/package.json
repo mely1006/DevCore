@@ -1,0 +1,29 @@
+{
+  "name": "gasaunivers-back-api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --watch src --exec node src/index.js",
+    "test": "cross-env NODE_ENV=test MONGO_URI=mongodb://127.0.0.1:27017/gasaunivers_test jest --runInBand",
+    "db:schema": "mongosh --quiet --file scripts/db_schema.mongo.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "cross-env": "^7.0.3"
+  }
+}
