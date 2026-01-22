@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevCore - Plateforme Pédagogique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --dev-blue: #2563eb;
+            --dev-bg: #f8fafc;
+            --dev-sidebar-text: #64748b;
+            --dev-text-dark: #1e293b;
+            --dev-border: #e2e8f0;
+            --dev-maroon: #581c2c;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--dev-bg);
+            color: var(--dev-text-dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            background: white;
+            border-right: 1px solid var(--dev-border);
+            padding: 1.5rem 0;
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 0 1.5rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            color: var(--dev-sidebar-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover { background: #f1f5f9; color: var(--dev-blue); }
+        .nav-item.active {
+            background: var(--dev-blue);
+            color: white;
+            border-radius: 0 50px 50px 0;
+            margin-right: 1rem;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 1rem;
+            width: 100%;
+        }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; padding: 2rem; }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            position: relative;
+            width: 350px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-box input {
+            padding-left: 2.5rem;
+            border-radius: 8px;
+            border-color: var(--dev-border);
+        }
+
+        /* Cards & UI */
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--dev-border);
+            height: 100%;
+        }
+
+        .stat-icon {
+            color: var(--dev-blue);
+            font-size: 1.2rem;
+        }
+
+        .btn-dev-primary {
+            background-color: var(--dev-blue);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .promo-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--dev-border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        .modal-content { border-radius: 16px; border: none; }
+        .modal-header { border-bottom: none; padding: 1.5rem 1.5rem 0.5rem; }
+        .modal-body { padding: 0.5rem 1.5rem 1.5rem; }
+        .modal-footer { border-top: none; padding: 0 1.5rem 1.5rem; }
+
+        .form-label { font-weight: 500; font-size: 0.9rem; margin-bottom: 0.4rem; }
+        
+        .error-message { color: #dc3545; font-size: 0.8rem; margin-top: 0.25rem; display: none; }
+        input:invalid:not(:placeholder-shown) { border-color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand">DevCore <i class="bi bi-chevron-left" style="font-size: 0.8rem; margin-left: auto; color: #cbd5e1;"></i></div>
+        <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="bi bi-grid-1x2"></i> Dashboard</div>
+        <div class="nav-item" onclick="switchTab('formateurs', this)"><i class="bi bi-people"></i> Formateurs</div>
+        <div class="nav-item" onclick="switchTab('promotions', this)"><i class="bi bi-mortarboard"></i> Promotions</div>
+        <div class="nav-item" onclick="switchTab('espaces', this)"><i class="bi bi-book"></i> Espaces pédagogiques</div>
+        <div class="nav-item" onclick="switchTab('stats', this)"><i class="bi bi-bar-chart"></i> Statistiques globales</div>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item"><i class="bi bi-person"></i> Profil</div>
+            <div class="nav-item"><i class="bi bi-gear"></i> Paramètres</div>
+            <div class="nav-item text-danger"><i class="bi bi-box-arrow-left"></i> Déconnexion</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="search" class="form-control" placeholder="Rechercher espaces ou...">
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="position-relative">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.6rem;">3</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="text-end">
+                        <div class="fw-bold small">kro roro</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">Directeur des Études</div>
+                    </div>
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; font-size: 0.8rem;">KR</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-container">
+            <section id="dashboard" class="tab-pane">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="fw-bold">Tableau de bord</h2>
+                        <p class="text-muted">Vue d'ensemble de votre activité</p>
+                    </div>
+                    <button class="btn btn-dev-primary" data-bs-toggle="modal" data-bs-target="#modalTravail">Créer un travail</button>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex justify-content-between">
+                            <div><div class="text-muted small">Promotions</div><h4 class="fw-bold m-0">12</h4></div>
+                            <i class="bi bi-mortarboard stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex justify-content-between">
+                            <div><div class="text-muted small">Formateurs</div><h4 class="fw-bold m-0">45</h4></div>
+                            <i class="bi bi-people stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex justify-content-between">
+                            <div><div class="text-muted small">Étudiants</div><h4 class="fw-bold m-0">856</h4></div>
+                            <i class="bi bi-person stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex justify-content-between">
+                            <div><div class="text-muted small">Espaces pédagogiques</div><h4 class="fw-bold m-0">78</h4></div>
+                            <i class="bi bi-book stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-7">
+                        <div class="stat-card"><h6 class="fw-bold mb-4">Distribution des étudiants</h6><canvas id="distChart"></canvas></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="stat-card"><h6 class="fw-bold mb-4">Participation par cours</h6><canvas id="partChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="formateurs" class="tab-pane d-none">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div><h2 class="fw-bold">Gestion des formateurs</h2><p class="text-muted">Gérer les comptes formateurs de la plateforme</p></div>
+                    <button class="btn btn-dev-primary" data-bs-toggle="modal" data-bs-target="#modalUser"><i class="bi bi-plus"></i> Ajouter un formateur</button>
+                </div>
+                <div class="stat-card p-0">
+                    <div class="p-3"><input type="search" class="form-control w-25" placeholder="Rechercher par nom ou email..."></div>
+                    <table class="table align-middle">
+                        <thead class="text-muted small"><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            <tr><td>juliette souNO</td><td>koko@gmail.com</td><td>1455771</td><td>Formateur</td><td><span class="badge-active">Actif</span></td><td><i class="bi bi-three-dots-vertical"></i></td></tr>
+                            <tr><td>happy kko</td><td>ko@gmail.com</td><td>1234332</td><td>Formateur</td><td><span class="badge-active">Actif</span></td><td><i class="bi bi-three-dots-vertical"></i></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="promotions" class="tab-pane d-none">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div><h2 class="fw-bold">Promotions</h2><p class="text-muted">Gérer les promotions par année académique</p></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary border-0 small">Derniers identifiants</button>
+                        <button class="btn btn-dev-primary" data-bs-toggle="modal" data-bs-target="#modalPromo"><i class="bi bi-plus"></i> Ajouter une promotion</button>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4"><div class="promo-card"><div class="d-flex justify-content-between mb-3"><h5 class="fw-bold m-0">SIL</h5><span class="text-muted small">2009</span></div><div class="small mb-1"><i class="bi bi-people me-2"></i> 2 Étudiants</div><div class="small mb-3"><i class="bi bi-book me-2"></i> 0 Espaces pédagogiques</div><button class="btn btn-primary w-100 mb-2">Ajouter étudiants</button><button class="btn btn-outline-secondary w-100">Voir étudiants</button></div></div>
+                    <div class="col-md-4"><div class="promo-card"><div class="d-flex justify-content-between mb-3"><h5 class="fw-bold m-0">RIT</h5><span class="text-muted small">2014</span></div><div class="small mb-1"><i class="bi bi-people me-2"></i> 1 Étudiants</div><div class="small mb-3"><i class="bi bi-book me-2"></i> 0 Espaces pédagogiques</div><button class="btn btn-primary w-100 mb-2">Ajouter étudiants</button><button class="btn btn-outline-secondary w-100">Voir étudiants</button></div></div>
+                    <div class="col-md-4"><div class="promo-card"><div class="d-flex justify-content-between mb-3"><h5 class="fw-bold m-0">SI</h5><span class="text-muted small">2009</span></div><div class="small mb-1"><i class="bi bi-people me-2"></i> 1 Étudiants</div><div class="small mb-3"><i class="bi bi-book me-2"></i> 0 Espaces pédagogiques</div><button class="btn btn-primary w-100 mb-2">Ajouter étudiants</button><button class="btn btn-outline-secondary w-100">Voir étudiants</button></div></div>
+                </div>
+            </section>
+            
+            <section id="espaces" class="tab-pane d-none">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div><h2 class="fw-bold">Espaces pédagogiques</h2><p class="text-muted">Gérer les matières et cours de la plateforme</p></div>
+                    <button class="btn btn-dev-primary" data-bs-toggle="modal" data-bs-target="#modalEspace"><i class="bi bi-plus"></i> Créer un espace</button>
+                </div>
+                <div class="stat-card p-0">
+                    <div class="p-3"><input type="search" class="form-control w-25" placeholder="Rechercher par matière ou formateur..."></div>
+                    <table class="table align-middle">
+                        <thead class="text-muted small"><tr><th>Matière</th><th>Formateur</th><th>Promotion</th><th>Étudiant</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            <tr><td>TIR</td><td>happy kko</td><td>php</td><td>mely ZARA</td><td><i class="bi bi-three-dots-vertical"></i></td></tr>
+                            <tr><td>PIRA</td><td>juliette souNO</td><td>SAA</td><td>lolo test</td><td><i class="bi bi-three-dots-vertical"></i></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="stats" class="tab-pane d-none">
+                <div class="mb-4">
+                    <h2 class="fw-bold">Statistiques globales</h2>
+                    <p class="text-muted">Analyse de performance et croissance de la plateforme</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="stat-card"><h6 class="fw-bold mb-4">Taux d'engagement mensuel</h6><canvas id="engChart"></canvas></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card"><h6 class="fw-bold mb-4">Répartition des rôles</h6><canvas id="roleChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalUser" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" onsubmit="return validateAndSubmit(event)">
+                <div class="modal-header">
+                    <div class="w-100"><h5 class="fw-bold m-0">Ajouter un utilisateur</h5><p class="text-muted small m-0">Créer un nouveau compte utilisateur pour la plateforme</p></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nom complet</label>
+                        <input type="text" class="form-control" name="nom" placeholder="Jean Dupont" required minlength="3" pattern="[a-zA-Z\s]+">
+                        <div class="error-message">Veuillez saisir un nom valide (min 3 caractères, lettres uniquement).</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" placeholder="jean.dupont@univ.ma" required>
+                        <div class="error-message">Format d'email invalide.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" name="pwd" value="********" required minlength="6">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rôle</label>
+                        <select class="form-select" required><option value="">Sélectionner un rôle</option><option>Formateur</option><option>Administrateur</option></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone</label>
+                        <input type="tel" class="form-control" name="tel" placeholder="+2126XXXXXXXX" pattern="^\+?[0-9\s\-]+$" inputmode="tel">
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-dev-primary w-100">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTravail" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" onsubmit="return validateAndSubmit(event)">
+                <div class="modal-header">
+                    <div><h5 class="fw-bold m-0">Créer un travail</h5><p class="text-muted small m-0">Choisissez le type (individuel ou collectif)...</p></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Type</label><select class="form-select" required><option>Collectif</option><option>Individuel</option></select></div>
+                    <div class="mb-3"><label class="form-label">Titre</label><input type="text" class="form-control" placeholder="Titre du travail" required></div>
+                    <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" placeholder="Description (optionnel)"></textarea></div>
+                    <div class="mb-3"><label class="form-label">Date de création</label><input type="date" class="form-control" value="2026-01-19" disabled></div>
+                    <div class="row">
+                        <div class="col-6 mb-3"><label class="form-label">Date de début</label><input type="date" class="form-control" name="start" required></div>
+                        <div class="col-6 mb-3"><label class="form-label">Date de fin</label><input type="date" class="form-control" name="end" required></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Étudiants (sélection multiple)</label>
+                        <div class="border rounded p-2 overflow-auto" style="height: 120px;">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="e1"><label class="form-check-label small" for="e1">JULIETTE SOUNOUVOU — juliette@gmail.com</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="e2"><label class="form-check-label small" for="e2">mely ZARA — mely@gmail.com</label></div>
+                        </div>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Nom du groupe (optionnel)</label><input type="text" class="form-control" placeholder="Ex: Groupe A"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-dev-primary w-100">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPromo" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" onsubmit="return validateAndSubmit(event)">
+                <div class="modal-header">
+                    <div><h5 class="fw-bold m-0">Ajouter une promotion</h5><p class="text-muted small">Créer une nouvelle promotion</p></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Libellé</label><input type="text" class="form-control" placeholder="Promotion Ingénierie 2026" required></div>
+                    <div class="mb-3"><label class="form-label">Année</label><input type="number" class="form-control" value="2026" required min="2000" max="2100"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-dev-primary w-100">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab switching
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-pane').forEach(t => t.classList.add('d-none'));
+            document.getElementById(tabId).classList.remove('d-none');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Form Validation Logic
+        function validateAndSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            let isValid = true;
+
+            // Reset error messages
+            form.querySelectorAll('.error-message').forEach(m => m.style.display = 'none');
+
+            if (!form.checkValidity()) {
+                isValid = false;
+                form.querySelectorAll(':invalid').forEach(input => {
+                    const msg = input.parentElement.querySelector('.error-message');
+                    if (msg) msg.style.display = 'block';
+                });
+            }
+
+            // Logic for dates (End > Start)
+            const start = form.querySelector('[name="start"]');
+            const end = form.querySelector('[name="end"]');
+            if(start && end && new Date(end.value) < new Date(start.value)) {
+                alert("La date de fin doit être après la date de début.");
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert("Données validées et enregistrées !");
+                bootstrap.Modal.getInstance(form.closest('.modal')).hide();
+                form.reset();
+            }
+            return false;
+        }
+
+        // Charts Init
+        const charts = () => {
+            new Chart(document.getElementById('distChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['2020', '2021', '2022', '2023', '2024'],
+                    datasets: [{ data: [180, 210, 195, 225, 250], backgroundColor: '#581c2c', borderRadius: 4 }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { borderDash: [5, 5] } }, x: { grid: { display: false } } } }
+            });
+
+            new Chart(document.getElementById('partChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['Info', 'RH', 'Finance', 'Marketing', 'Gestion'],
+                    datasets: [{ data: [29, 11, 18, 20, 23], backgroundColor: ['#581c2c', '#7d283e', '#a23450', '#c74062', '#e47d95'] }]
+                }
+            });
+            
+            // Stats tab conceptual charts
+            new Chart(document.getElementById('engChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Avr', 'Mai'],
+                    datasets: [{ label: 'Engagement', data: [65, 78, 72, 85, 90], borderColor: '#2563eb', tension: 0.3 }]
+                }
+            });
+        };
+        window.onload = charts;
+    </script>
+</body>
+</html>
